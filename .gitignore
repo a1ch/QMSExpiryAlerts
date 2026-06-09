@@ -1,0 +1,13 @@
+# Secrets & local config
+local.settings.json
+*.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.python_packages/
+
+# Azure Functions
+bin/
+obj/

@@ -1,0 +1,19 @@
+# QMS Document Expiry Alerts - Azure Function App settings
+# Paste your values after each "=" then add these in the Azure Portal:
+#   Function App > Settings > Environment variables > App settings
+# (or store secrets in Key Vault and reference them).
+# Nothing here is filled in - safe to keep in a text editor while you work.
+
+TENANT_ID=
+CLIENT_ID=
+CLIENT_SECRET=
+ALERT_SENDER=
+ALERT_RECIPIENTS=
+
+# Pre-filled defaults (override only if needed)
+SHAREPOINT_SITE_ID=streamflogroup.sharepoint.com,8038b92e-9f86-46c8-ba49-8a13f78ce602,baec0237-66e5-4a7d-ab2e-560e69763e17
+QMS_LIST_ID=c11c5e08-fed4-476d-bbba-7ea56947383d
+EXPIRY_FIELD=Document_x0020_Expiry_x0020_Date
+ALERT_TIMEZONE=America/Edmonton
+WARN_DAYS=30,7
+EXPIRY_ALERT_SCHEDULE=0 0 13 * * *
