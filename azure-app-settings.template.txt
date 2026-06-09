@@ -16,4 +16,8 @@ QMS_LIST_ID=c11c5e08-fed4-476d-bbba-7ea56947383d
 EXPIRY_FIELD=Document_x0020_Expiry_x0020_Date
 ALERT_TIMEZONE=America/Edmonton
 WARN_DAYS=30,7
-EXPIRY_ALERT_SCHEDULE=0 0 13 * * *
+
+# Schedule: runs once daily at 08:00. TZ makes the cron run in local time
+# (Linux Function App) so it stays at 8am across daylight-saving changes.
+TZ=America/Edmonton
+EXPIRY_ALERT_SCHEDULE=0 0 8 * * *

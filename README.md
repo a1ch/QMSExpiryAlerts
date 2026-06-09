@@ -80,7 +80,7 @@ Fill these in `azure-app-settings.template.txt`, then add them as Function App
 | `EXPIRY_FIELD` | `Document_x0020_Expiry_x0020_Date` | Internal column name |
 | `ALERT_TIMEZONE` | `America/Edmonton` | Used for "days until" math |
 | `WARN_DAYS` | `30,7` | Pre-expiry thresholds |
-| `EXPIRY_ALERT_SCHEDULE` | `0 0 13 * * *` | NCRONTAB (13:00 UTC = 07:00 MDT) |
+| `EXPIRY_ALERT_SCHEDULE` | `0 0 8 * * *` | NCRONTAB (08:00 daily local time; set TZ=America/Edmonton) |
 
 ## Run locally
 

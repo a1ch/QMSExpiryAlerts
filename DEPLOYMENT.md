@@ -147,7 +147,8 @@ ALERT_SENDER       = (the from mailbox)
 ALERT_RECIPIENTS   = (semicolon/comma separated)
 ALERT_TIMEZONE     = America/Edmonton
 WARN_DAYS          = 30,7
-EXPIRY_ALERT_SCHEDULE = 0 0 13 * * *
+TZ                 = America/Edmonton
+EXPIRY_ALERT_SCHEDULE = 0 0 8 * * *
 ```
 
 Save and let the app restart.
