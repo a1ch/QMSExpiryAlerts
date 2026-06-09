@@ -1,0 +1,9 @@
+# Doppler project/config defaults for local development.
+# Contains NO secrets - only the names of the Doppler project and config,
+# so `doppler setup` / `doppler run` pick the right ones automatically.
+# Edit these two values to match your Doppler project, then run:
+#   doppler setup
+#   doppler run -- func start
+setup:
+  project: qms-expiry-alerts   # <-- change to your Doppler project name
+  config: dev                  # <-- change to your Doppler config (e.g. dev / prd)
