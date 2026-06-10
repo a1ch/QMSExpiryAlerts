@@ -1,12 +1,26 @@
 # QMS Document Expiry Alerts - Azure Function App settings
 # Paste your values after each "=" then add these in the Azure Portal:
 #   Function App > Settings > Environment variables > App settings
-# (or store secrets in Key Vault and reference them).
 # Nothing here is filled in - safe to keep in a text editor while you work.
 
-TENANT_ID=
-CLIENT_ID=
-CLIENT_SECRET=
+# --- Secret access (runtime read from Key Vault via managed identity) ---
+# The function reads the AAD secrets straight from Key Vault using the app's
+# managed identity. You do NOT use @Microsoft.KeyVault(...) references anymore.
+# Just point it at the vault; the three TENANT_ID/CLIENT_ID/CLIENT_SECRET app
+# settings (and their KV references) are no longer needed on Azure.
+KEY_VAULT_URI=https://qmsexpiryalerts.vault.azure.net/
+
+# Secret NAMES inside the vault (override only if yours differ - check the
+# vault's Secrets blade; names are not secret). Defaults shown:
+KV_SECRET_TENANT_ID=AZURE-TENANT-ID
+KV_SECRET_CLIENT_ID=AZURE-CLIENT-ID
+KV_SECRET_CLIENT_SECRET=AZURE-CLIENT-SECRET
+
+# Only set this if the Function App uses a USER-assigned managed identity to
+# read the vault. Leave blank/absent for a system-assigned identity.
+MANAGED_IDENTITY_CLIENT_ID=
+
+# --- Plain config ---
 ALERT_SENDER=
 ALERT_RECIPIENTS=
 
