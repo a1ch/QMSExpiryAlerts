@@ -1,8 +1,11 @@
 .git*
+.github
 .vscode
 .venv
 __pycache__
 local.settings.json
 tests/
 README.md
+DEPLOYMENT.md
+doppler.yaml
 azure-app-settings.template.txt
