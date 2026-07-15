@@ -115,3 +115,25 @@ class Settings:
         self.warn_days = sorted({int(d) for d in _split(_get("WARN_DAYS", "30,7"))}, reverse=True)
 
         self.graph_base = _get("GRAPH_BASE", "https://graph.microsoft.com/v1.0")
+
+        # --- AVL QMS-supplier change digest (second timer function) ---
+        # Defaults point at the Corporate AVL site + CorpAVLV2 list. Recipients
+        # and sender fall back to the expiry-alert values if not set separately.
+        self.avl_site_id = _get(
+            "AVL_SITE_ID",
+            "streamflogroup.sharepoint.com,f3ef7cbe-fc81-4c6a-9a96-29ff8dfcf544,"
+            "d75f5575-5422-400c-8846-44a95cc8c665",
+        )
+        self.avl_list_id = _get("AVL_LIST_ID", "ff69e5fc-ba8e-4e28-998a-f34514c502f1")
+        self.avl_sender = _get("AVL_ALERT_SENDER", self.sender)
+        _avl_recips = _split(_get("AVL_ALERT_RECIPIENTS", ""))
+        self.avl_recipients = _avl_recips or self.recipients
+        # SFI Edmonton = Stream-Flo Industries entity (company code 2910).
+        self.edmonton_company_code = _get("AVL_EDMONTON_COMPANY_CODE", "2910")
+        # Weekly baseline snapshot in the Function App's storage account.
+        self.snapshot_container = _get("AVL_SNAPSHOT_CONTAINER", "avl-snapshots")
+        self.snapshot_blob = _get("AVL_SNAPSHOT_BLOB", "latest.json")
+        # First run has no baseline: default is to store it silently (no email).
+        self.avl_send_on_first_run = str(
+            _get("AVL_SEND_ON_FIRST_RUN", "false")
+        ).strip().lower() in ("1", "true", "yes")

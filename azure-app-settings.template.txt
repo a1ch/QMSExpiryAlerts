@@ -1,7 +1,7 @@
-# QMS Document Expiry Alerts - Azure Function App settings
+# QMS Automation - Azure Function App settings
 # Paste your values after each "=" then add these in the Azure Portal:
 #   Function App > Settings > Environment variables > App settings
-# Nothing here is filled in - safe to keep in a text editor while you work.
+# Nothing secret here is filled in - safe to keep in a text editor while you work.
 
 # --- Secret access (runtime read from Key Vault via managed identity) ---
 # The function reads the AAD secrets straight from Key Vault using the app's
@@ -17,10 +17,12 @@ KV_SECRET_CLIENT_ID=AZURE-CLIENT-ID
 KV_SECRET_CLIENT_SECRET=AZURE-CLIENT-SECRET
 
 # Only set this if the Function App uses a USER-assigned managed identity to
-# read the vault. Leave blank/absent for a system-assigned identity.
+# read the vault / storage. Leave blank/absent for a system-assigned identity.
 MANAGED_IDENTITY_CLIENT_ID=
 
-# --- Plain config ---
+# ============================================================
+# 1) QMS Document Expiry Alerts (daily)
+# ============================================================
 ALERT_SENDER=
 ALERT_RECIPIENTS=
 
@@ -35,3 +37,32 @@ WARN_DAYS=30,7
 # (Linux Function App) so it stays at 8am across daylight-saving changes.
 TZ=America/Edmonton
 EXPIRY_ALERT_SCHEDULE=0 0 8 * * *
+
+# ============================================================
+# 2) AVL QMS Supplier Change Digest (weekly - Monday)
+# ============================================================
+# Who receives the supplier digest. If left blank, falls back to
+# ALERT_RECIPIENTS / ALERT_SENDER above.
+AVL_ALERT_SENDER=
+AVL_ALERT_RECIPIENTS=
+
+# Corporate AVL site + CorpAVLV2 list (pre-filled; override only if they move).
+AVL_SITE_ID=streamflogroup.sharepoint.com,f3ef7cbe-fc81-4c6a-9a96-29ff8dfcf544,d75f5575-5422-400c-8846-44a95cc8c665
+AVL_LIST_ID=ff69e5fc-ba8e-4e28-998a-f34514c502f1
+
+# SFI Edmonton = Stream-Flo Industries entity (SAP company code 2910).
+AVL_EDMONTON_COMPANY_CODE=2910
+
+# Weekly baseline snapshot storage (uses the Function App's own storage account
+# via AzureWebJobsStorage - no new resource needed).
+AVL_SNAPSHOT_CONTAINER=avl-snapshots
+AVL_SNAPSHOT_BLOB=latest.json
+
+# On the very first run there is no baseline. Default "false" = store the
+# baseline silently (no email). Set "true" only if you want the first run to
+# email every current supplier as "new".
+AVL_SEND_ON_FIRST_RUN=false
+
+# Schedule: 08:00 every Monday, local time (TZ=America/Edmonton above).
+# NCRONTAB is 6-field: sec min hour day month day-of-week (1 = Monday).
+AVL_DIGEST_SCHEDULE=0 0 8 * * 1
