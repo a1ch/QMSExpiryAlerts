@@ -117,8 +117,10 @@ class Settings:
         self.graph_base = _get("GRAPH_BASE", "https://graph.microsoft.com/v1.0")
 
         # --- AVL QMS-supplier change digest (second timer function) ---
-        # Defaults point at the Corporate AVL site + CorpAVLV2 list. Recipients
-        # and sender fall back to the expiry-alert values if not set separately.
+        # Defaults point at the Corporate AVL site + CorpAVLV2 list. The sender
+        # mailbox falls back to the expiry-alert sender, but recipients do NOT
+        # fall back (they stay empty until set) so the digest can never email the
+        # wrong audience; the function skips sending when no AVL recipients exist.
         self.avl_site_id = _get(
             "AVL_SITE_ID",
             "streamflogroup.sharepoint.com,f3ef7cbe-fc81-4c6a-9a96-29ff8dfcf544,"
@@ -126,8 +128,7 @@ class Settings:
         )
         self.avl_list_id = _get("AVL_LIST_ID", "ff69e5fc-ba8e-4e28-998a-f34514c502f1")
         self.avl_sender = _get("AVL_ALERT_SENDER", self.sender)
-        _avl_recips = _split(_get("AVL_ALERT_RECIPIENTS", ""))
-        self.avl_recipients = _avl_recips or self.recipients
+        self.avl_recipients = _split(_get("AVL_ALERT_RECIPIENTS", ""))
         # SFI Edmonton = Stream-Flo Industries entity (company code 2910).
         self.edmonton_company_code = _get("AVL_EDMONTON_COMPANY_CODE", "2910")
         # Weekly baseline snapshot in the Function App's storage account.

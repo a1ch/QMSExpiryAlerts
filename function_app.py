@@ -10,6 +10,7 @@
    changes, with SFI Edmonton listed first.
 """
 import logging
+import os
 
 import azure.functions as func
 
@@ -23,6 +24,12 @@ from avl_emailer import build_message as build_avl_message
 from avl_logic import diff_snapshots, has_changes
 
 app = func.FunctionApp()
+
+# Resolve the weekly schedule at import time with a safe literal default so the
+# function is valid even if the AVL_DIGEST_SCHEDULE app setting is absent
+# (a missing %setting% binding would otherwise fail indexing). Default: 08:00
+# every Monday, local time (TZ=America/Edmonton on the app).
+AVL_SCHEDULE = os.environ.get("AVL_DIGEST_SCHEDULE", "0 0 8 * * 1")
 
 
 @app.function_name(name="QmsExpiryAlerts")
@@ -59,7 +66,7 @@ def qms_expiry_alerts(timer: func.TimerRequest) -> None:
 
 @app.function_name(name="AvlSupplierChangeDigest")
 @app.timer_trigger(
-    schedule="%AVL_DIGEST_SCHEDULE%",
+    schedule=AVL_SCHEDULE,
     arg_name="timer",
     run_on_startup=False,
     use_monitor=True,
@@ -90,19 +97,28 @@ def avl_supplier_change_digest(timer: func.TimerRequest) -> None:
         return
 
     if has_changes(changes):
-        message = build_avl_message(
-            changes, settings.avl_recipients, settings.edmonton_company_code
-        )
-        client.send_mail(settings.avl_sender, message)
-        logging.info(
-            "AVL change digest sent to %s (%d change(s)).",
-            ", ".join(settings.avl_recipients),
-            len(changes),
-        )
+        if settings.avl_recipients:
+            message = build_avl_message(
+                changes, settings.avl_recipients, settings.edmonton_company_code
+            )
+            client.send_mail(settings.avl_sender, message)
+            logging.info(
+                "AVL change digest sent to %s (%d change(s)).",
+                ", ".join(settings.avl_recipients),
+                len(changes),
+            )
+        else:
+            # Safety: never fall back to the expiry-alert audience. If no AVL
+            # recipients are configured, keep tracking snapshots but do not send.
+            logging.warning(
+                "%d AVL change(s) detected but AVL_ALERT_RECIPIENTS is not set; "
+                "skipping send. Set it to start delivering the digest.",
+                len(changes),
+            )
     else:
         logging.info("No AVL supplier changes since last week. No email sent.")
 
-    # Advance the baseline only after a successful send (or a clean no-change
-    # run). If send_mail raised above, we never reach here, so the change set is
-    # retried on the next run rather than being silently lost.
+    # Advance the baseline only after a successful send (or a clean no-change /
+    # no-recipient run). If send_mail raised above, we never reach here, so the
+    # change set is retried on the next run rather than being silently lost.
     snapshot_store.save_current(settings, current)
